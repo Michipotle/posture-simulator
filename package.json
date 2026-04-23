@@ -1,0 +1,58 @@
+{
+  "name": "posture-simulator",
+  "version": "1.0.0",
+  "description": "🏥 Simulador de Higiene Postural - Juego interactivo educativo para prevenir lesiones musculoesqueléticas",
+  "main": "index.html",
+  "scripts": {
+    "start": "open index.html",
+    "serve": "python -m http.server 8000"
+  },
+  "keywords": [
+    "ergonomía",
+    "higiene postural",
+    "prevención de lesiones",
+    "educación",
+    "gamificación",
+    "salud ocupacional",
+    "biomecánica",
+    "espalda",
+    "columna vertebral"
+  ],
+  "author": "Michipotle <mhs8397@gmail.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Michipotle/posture-simulator.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Michipotle/posture-simulator/issues"
+  },
+  "homepage": "https://github.com/Michipotle/posture-simulator#readme",
+  "technologies": [
+    "HTML5",
+    "CSS3",
+    "JavaScript (Vanilla)",
+    "Unsplash API (imágenes)"
+  ],
+  "features": [
+    "7 niveles interactivos",
+    "Sistema dinámico de salud",
+    "Feedback educativo con términos médicos",
+    "Puntuación y resultados finales",
+    "Diseño responsivo",
+    "Sin dependencias externas"
+  ],
+  "targetAudience": [
+    "Trabajadores de oficina",
+    "Personal de almacenes",
+    "Obreros y técnicos",
+    "Estudiantes de salud ocupacional",
+    "Capacitadores de ergonomía",
+    "Equipos de recursos humanos"
+  ],
+  "education": {
+    "level": "Intermedio",
+    "type": "Gamificado",
+    "duration": "5-10 minutos por sesión"
+  }
+}
