@@ -1,0 +1,60 @@
+# Sistema Operativo
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+
+# IDEs
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+.atom/
+.project
+.classpath
+
+# Node.js (si se agrega en el futuro)
+node_modules/
+npm-debug.log
+yarn-error.log
+package-lock.json
+yarn.lock
+
+# Compilados y build
+dist/
+build/
+*.o
+*.so
+*.dll
+*.exe
+
+# Archivos de prueba
+test/
+tests/
+*.test.js
+coverage/
+
+# Archivos temporales
+*.tmp
+*.temp
+*.log
+*.bak
+
+# Archivos del sistema
+.env
+.env.local
+config/local.js
+
+# Caché
+.cache/
+__pycache__/
+*.pyc
+
+# Variables de entorno
+.env.example
+secrets/
+
+# Archivos locales no versionados
+local/
+private/
