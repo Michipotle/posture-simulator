@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulador de Higiene Postural - Prevención de Lesiones</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        #game-container {
+            background: white;
+            width: 100%;
+            max-width: 700px;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .header h1 {
+            color: #333;
+            margin-bottom: 5px;
+            font-size: 28px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .stats-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .stat-box {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            border-left: 4px solid #667eea;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #666;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .salud-bar-container {
+            margin-top: 10px;
+        }
+
+        .salud-bar {
+            width: 100%;
+            height: 25px;
+            background: #e0e0e0;
+            border-radius: 12px;
+            overflow: hidden;
+            margin-top: 8px;
+        }
+
+        #progreso {
+            height: 100%;
+            background: linear-gradient(90deg, #4caf50, #81c784);
+            transition: width 0.5s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .progress-warning {
+            background: linear-gradient(90deg, #ff9800, #f57c00) !important;
+        }
+
+        .progress-danger {
+            background: linear-gradient(90deg, #f44336, #e53935) !important;
+        }
+
+        .nivel-info {
+            background: #e3f2fd;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #2196f3;
+        }
+
+        .nivel-info strong {
+            color: #1976d2;
+        }
+
+        .escena-container {
+            background: #f5f5f5;
+            border: 2px dashed #ddd;
+            padding: 20px;
+            border-radius: 12px;
+            margin: 20px 0;
+            text-align: center;
+            min-height: 300px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .escena-imagen-wrapper {
+            width: 100%;
+            height: 280px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+        }
+
+        .escena-imagen-wrapper img {
+            max-width: 100%;
+            max-height: 100%;
+            border-radius: 8px;
+            object-fit: contain;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        #escena-texto {
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        #escena-texto h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 20px;
+        }
+
+        #escena-texto p {
+            color: #666;
+            line-height: 1.6;
+            font-size: 16px;
+        }
+
+        #opciones {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        button {
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            text-align: left;
+        }
+
+        .btn-opcion {
+            background: #f0f0f0;
+            color: #333;
+            border: 2px solid #ddd;
+        }
+
+        .btn-opcion:hover {
+            background: #e3f2fd;
+            border-color: #667eea;
+            transform: translateX(5px);
+        }
+
+        .btn-opcion:active {
+            transform: translateX(3px);
+        }
+
+        #explicacion {
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 10px;
+            display: none;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .error {
+            background: #ffebee;
+            color: #c62828;
+            border-left: 4px solid #f44336;
+        }
+
+        .error strong {
+            color: #b71c1c;
+        }
+
+        .exito {
+            background: #e8f5e9;
+            color: #2e7d32;
+            border-left: 4px solid #4caf50;
+        }
+
+        .exito strong {
+            color: #1b5e20;
+        }
+
+        .btn-siguiente {
+            background: linear-gradient(135deg, #667eea, #764ba2) !important;
+            color: white !important;
+            width: 100%;
+            display: none;
+            margin-top: 20px;
+        }
+
+        .btn-siguiente:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-reiniciar {
+            background: linear-gradient(135deg, #667eea, #764ba2) !important;
+            color: white !important;
+            width: 100%;
+        }
+
+        .btn-reiniciar:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .game-over {
+            text-align: center;
+            padding: 40px 0;
+        }
+
+        .game-over h2 {
+            color: #f44336;
+            font-size: 28px;
+            margin-bottom: 15px;
+        }
+
+        .game-over p {
+            color: #666;
+            font-size: 16px;
+            line-height: 1.8;
+            margin-bottom: 20px;
+        }
+
+        .game-over ul {
+            color: #666;
+            display: inline-block;
+            text-align: left;
+        }
+
+        .game-over li {
+            margin: 8px 0;
+        }
+
+        .fin-juego {
+            text-align: center;
+            padding: 40px 0;
+        }
+
+        .fin-juego h2 {
+            color: #4caf50;
+            font-size: 28px;
+            margin-bottom: 15px;
+        }
+
+        .fin-juego p {
+            color: #666;
+            font-size: 16px;
+            line-height: 1.8;
+            margin-bottom: 20px;
+        }
+
+        .puntuacion-final {
+            background: #e8f5e9;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .puntuacion-final h3 {
+            color: #2e7d32;
+            margin-bottom: 10px;
+        }
+
+        .puntuacion-final p {
+            font-size: 18px;
+            font-weight: bold;
+            color: #1b5e20;
+            margin: 8px 0;
+        }
+
+        .tips {
+            background: #fff3e0;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 15px;
+            border-left: 4px solid #ff9800;
+        }
+
+        .tips strong {
+            color: #e65100;
+        }
+
+        .tips p {
+            color: #666;
+            font-size: 14px;
+            line-height: 1.6;
+            margin-top: 8px;
+        }
+
+        @media (max-width: 600px) {
+            #game-container {
+                padding: 20px;
+            }
+
+            .header h1 {
+                font-size: 22px;
+            }
+
+            .escena-imagen-wrapper {
+                height: 200px;
+            }
+
+            .stats-container {
+                grid-template-columns: 1fr;
+            }
+
+            button {
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div id="game-container">
+    <div class="header">
+        <h1>🏥 Simulador de Higiene Postural</h1>
+        <p>Aprende a proteger tu espalda en el trabajo y el hogar</p>
+    </div>
+
+    <div class="stats-container">
+        <div class="stat-box">
+            <div class="stat-label">Salud Vertebral</div>
+            <div class="salud-bar-container">
+                <div class="salud-bar"><div id="progreso">100%</div></div>
+            </div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-label">Nivel</div>
+            <div class="stat-value"><span id="nivel-actual">1</span>/<span id="nivel-total">7</span></div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-label">Respuestas Correctas</div>
+            <div class="stat-value"><span id="respuestas-correctas">0</span>/7</div>
+        </div>
+    </div>
+
+    <div class="nivel-info" id="nivel-info"></div>
+    
+    <div class="escena-container">
+        <div class="escena-imagen-wrapper" id="escena-imagen-wrapper"></div>
+        <div id="escena-texto">Cargando escenario...</div>
+    </div>
+
+    <div id="opciones"></div>
+    <div id="explicacion"></div>
+    <button id="btn-siguiente" class="btn-siguiente">Siguiente Escena →</button>
+</div>
+
+<script>
+    let salud = 100;
+    let escenaActual = 0;
+    let respuestasCorrectas = 0;
+
+    const niveles = [
+        {
+            titulo: "Nivel 1: Trabajando en la Oficina",
+            contexto: "Trabajas 8 horas al día en una oficina. Has estado sentado 4 horas sin moverte.",
+            pregunta: "Sientes tensión en el cuello y espalda baja. ¿Qué haces?",
+            imagen: "https://images.unsplash.com/photo-1587825140708-dfaf72ae4b04?w=600&h=400&fit=crop",
+            opciones: [
+                {
+                    texto: "Me inclino hacia adelante para ver mejor el monitor (mantego la espalda redondeada)",
+                    correcta: false,
+                    daño: 20,
+                    feedback: "❌ <strong>Incorrecto.</strong> Inclinar la espalda hacia adelante crea una protrusión cervical. Esto aumenta presión en los discos vertebrales L4-L5 y puede causar dolor irradiado al brazo (radiculopatía)."
+                },
+                {
+                    texto: "Ajusto mi silla, subo el monitor a nivel de ojos y me estiro",
+                    correcta: true,
+                    daño: 0,
+                    feedback: "✅ <strong>Correcto.</strong> Mantener la columna alineada reduce la carga en músculos y nervios. El monitor debe estar a altura de ojos, con codos a 90° y plantas de pies apoyadas en el suelo."
+                },
+                {
+                    texto: "Me recuesto en la silla y veo hacia arriba",
+                    correcta: false,
+                    daño: 15,
+                    feedback: "❌ <strong>Incorrecto.</strong> Esta postura causa hiperextensión cervical. Comprime los nervios y puede generar cervicalgia (dolor de cuello) crónica."
+                }
+            ]
+        },
+        {
+            titulo: "Nivel 2: Levantando una Caja Pesada",
+            contexto: "En el almacén hay una caja de 20 kg en el suelo que necesitas mover.",
+            pregunta: "¿Cómo levantas la caja de forma segura?",
+            imagen: "https://images.unsplash.com/photo-1454496522488-7a8e488e8606?w=600&h=400&fit=crop",
+            opciones: [
+                {
+                    texto: "Doblo la espalda con las piernas rectas y levanto con la fuerza de la espalda",
+                    correcta: false,
+                    daño: 30,
+                    feedback: "❌ <strong>PELIGRO.</strong> Esta es la postura más peligrosa. Crea un efecto palanca en L5-S1, aumentando riesgo de hernia discal (extrusión del núcleo pulposo). Pueden dañarse las raíces nerviosas."
+                },
+                {
+                    texto: "Flexiono las rodillas, mantengo la espalda recta, pego la caja a mi cuerpo y levanto",
+                    correcta: true,
+                    daño: 0,
+                    feedback: "✅ <strong>Perfecto.</strong> Usas la fuerza de los cuádriceps y glúteos. La caja pegada al cuerpo reduce el momento de fuerza. Los discos lumbares están protegidos. Esta es la técnica recomendada por ergónomos."
+                },
+                {
+                    texto: "Giro mi cuerpo mientras levanto con una sola mano",
+                    correcta: false,
+                    daño: 25,
+                    feedback: "❌ <strong>Incorrecto.</strong> Girar mientras levantas crea un movimiento de torsión lumbar. Esto puede dañar los ligamentos espinales y las facetas articulares, generando dolor agudo e inflamación."
+                }
+            ]
+        },
+        {
+            titulo: "Nivel 3: Cargar Bolsas de la Compra",
+            contexto: "Acabas de comprar en el supermercado y tienes bolsas pesadas en ambas manos.",
+            pregunta: "¿Cómo cargas las bolsas desde tu auto hasta la casa?",
+            imagen: "https://images.unsplash.com/photo-1607623814075-e51df1bdc82f?w=600&h=400&fit=crop",
+            opciones: [
+                {
+                    texto: "Cargo todas las bolsas en una sola mano para hacer menos viajes",
+                    correcta: false,
+                    daño: 25,
+                    feedback: "❌ <strong>Incorrecto.</strong> Cargar todo en una mano causa desequilibrio postural. Tu columna debe contrarrestar el peso lateral, generando presión asimétrica en los discos intervertebrales y fatiga muscular."
+                },
+                {
+                    texto: "Distribuyo el peso equitativamente en ambas manos, manteniendo los brazos cerca del cuerpo",
+                    correcta: true,
+                    daño: 0,
+                    feedback: "✅ <strong>Excelente.</strong> Distribuir el peso equilibradamente mantiene la alineación neutral de la columna. Así se distribuye la carga equitativamente en ambas facetas articulares."
+                },
+                {
+                    texto: "Me inclino hacia un lado para equilibrar el peso",
+                    correcta: false,
+                    daño: 20,
+                    feedback: "❌ <strong>Incorrecto.</strong> Esta escoliosis funcional (curvatura lateral de la columna) causa compresión vertebral unilateral, inflamación de ligamentos y riesgo de estenosis espinal."
+                }
+            ]
+        },
+        {
+            titulo: "Nivel 4: Limpiando tu Hogar",
+            contexto: "Necesitas limpiar pisos y lavar platos después del trabajo.",
+            pregunta: "¿Cómo realizas estas tareas sin dañar tu espalda?",
+            imagen: "https://images.unsplash.com/photo-1581578731548-c64695c952952?w=600&h=400&fit=crop",
+            opciones: [
+                {
+                    texto: "Me agacho doblando la espalda y mantendré las piernas rectas mientras friego",
+                    correcta: false,
+                    daño: 20,
+                    feedback: "❌ <strong>Incorrecto.</strong> Mantener piernas rectas mientras frotas causa flexión lumbar repetida, inflamación de discos y ligamentos. Aumenta riesgo de lumbalgia crónica."
+                },
+                {
+                    texto: "Ajusto la altura de la pileta/piso flexionando rodillas, mantengo la espalda recta y cambio de pierna frecuentemente",
+                    correcta: true,
+                    daño: 0,
+                    feedback: "✅ <strong>Correcto.</strong> Flexionar rodillas descarga la columna lumbar. Cambiar de pierna previene fatiga unilateral. Mantener la espalda recta protege discos y ligamentos espinales."
+                },
+                {
+                    texto: "Me estiro demasiado hacia adelante para llegar más lejos",
+                    correcta: false,
+                    daño: 18,
+                    feedback: "❌ <strong>Incorrecto.</strong> Esto aumenta el brazo de palanca (momento de fuerza). Tu espalda baja debe soportar presión aumentada, riesgo de protrusión discal."
+                }
+            ]
+        },
+        {
+            titulo: "Nivel 5: Trabajos de Mantenimiento en Casa",
+            contexto: "Necesitas reparar algo en un lugar alto: cambiar una bombilla, limpiar el ventilador del techo.",
+            pregunta: "¿Cómo trabajas de forma segura en altura?",
+            imagen: "https://images.unsplash.com/photo-1581092918056-0c4c3acd3789?w=600&h=400&fit=crop",
+            opciones: [
+                {
+                    texto: "Subo a una escalera/taburete inestable e hiperextiendo mi cuello hacia atrás",
+                    correcta: false,
+                    daño: 25,
+                    feedback: "❌ <strong>Incorrecto.</strong> Hiperextensión cervical comprime nervios cervicales. Además, la inestabilidad aumenta riesgo de caídas. Combina dos peligros: lesión cervical + trauma."
+                },
+                {
+                    texto: "Uso una escalera estable, mantengo el cuerpo alineado y evito hiperextender el cuello",
+                    correcta: true,
+                    daño: 0,
+                    feedback: "✅ <strong>Perfecto.</strong> Una escalera segura evita caídas. Mantener alineación protege la columna cervical. La seguridad es lo primero en trabajos en altura."
+                },
+                {
+                    texto: "Me estiro mucho hacia los lados para no mover la escalera",
+                    correcta: false,
+                    daño: 20,
+                    feedback: "❌ <strong>Incorrecto.</strong> Estirarse lateralmente causa asimetría postural y compresión selectiva de discos. Además, perderás el equilibrio. Mueve la escalera en su lugar."
+                }
+            ]
+        },
+        {
+            titulo: "Nivel 6: Conduciendo Tu Vehículo",
+            contexto: "Conducirás durante 1-2 horas para ir al trabajo.",
+            pregunta: "¿Cómo configuras el asiento del auto?",
+            imagen: "https://images.unsplash.com/photo-1489824904134-891ab64532f1?w=600&h=400&fit=crop",
+            opciones: [
+                {
+                    texto: "Coloco el asiento muy atrás y recostado hacia atrás (posición relajada)",
+                    correcta: false,
+                    daño: 20,
+                    feedback: "❌ <strong>Incorrecto.</strong> Esta postura causa hiperextensión lumbar y presión en el nervio ciático. Las lumbalgias relacionadas con conducción son muy comunes con esta posición."
+                },
+                {
+                    texto: "Ajusto el asiento con apoyo lumbar, rodillas ligeramente flexionadas, manos a 9-3 en el volante",
+                    correcta: true,
+                    daño: 0,
+                    feedback: "✅ <strong>Excelente.</strong> Apoyo lumbar mantiene la curva lordótica. Rodillas flexionadas reducen tensión. Posición de manos permite control seguro y reduce tensión en cuello/hombros."
+                },
+                {
+                    texto: "Siento tensión, así que giro el cuello constantemente mientras conduces",
+                    correcta: false,
+                    daño: 15,
+                    feedback: "❌ <strong>Incorrecto.</strong> Girar constantemente causa tensión muscular cervical y puede provocar cervicalgia. Debes ajustar el asiento/espejo, no girar el cuello."
+                }
+            ]
+        },
+        {
+            titulo: "Nivel 7: Trabajando en la Computadora - Posición Final",
+            contexto: "Es el final de tu jornada. Has aprendido sobre higiene postural. ¿Recuerdas la posición correcta?",
+            pregunta: "Describe la posición corporal correcta para trabajar en la oficina:",
+            imagen: "https://images.unsplash.com/photo-1552664730-d307ca884978?w=600&h=400&fit=crop",
+            opciones: [
+                {
+                    texto: "Espalda recta, monitor a altura de ojos, codos a 90°, pies apoyados en el suelo",
+                    correcta: true,
+                    daño: 0,
+                    feedback: "✅ <strong>¡PERFECTO!</strong> Has aprendido bien. Esta es la posición ergonómica ideal. Protege: discos vertebrales, nervios espinales, músculos y ligamentos. ¡Felicidades!"
+                },
+                {
+                    texto: "Inclinado hacia adelante, monitor bajo, apoyando el peso solo en una pierna",
+                    correcta: false,
+                    daño: 25,
+                    feedback: "❌ <strong>Incorrecto.</strong> ¡Repasa lo aprendido! Esta es exactamente la posición que daña tu columna. Necesitas mantener alineación neutral."
+                },
+                {
+                    texto: "Cualquier posición es igual si estoy cómodo en el momento",
+                    correcta: false,
+                    daño: 30,
+                    feedback: "❌ <strong>Incorrecto.</strong> La comodidad inmediata no significa protección a largo plazo. Las malas posturas crónicas causan daño degenerativo después de meses/años."
+                }
+            ]
+        }
+    ];
+
+    function actualizarBarra() {
+        const progreso = document.getElementById('progreso');
+        const porcentaje = Math.max(0, salud);
+        progreso.style.width = porcentaje + "%";
+        progreso.textContent = Math.round(porcentaje) + "%";
+
+        if (porcentaje > 50) {
+            progreso.parentElement.className = 'salud-bar';
+        } else if (porcentaje > 25) {
+            progreso.parentElement.className = 'salud-bar progress-warning';
+        } else {
+            progreso.parentElement.className = 'salud-bar progress-danger';
+        }
+    }
+
+    function cargarEscena() {
+        const nivel = niveles[escenaActual];
+        document.getElementById('explicacion').style.display = 'none';
+        document.getElementById('btn-siguiente').style.display = 'none';
+        
+        document.getElementById('nivel-actual').textContent = escenaActual + 1;
+        document.getElementById('nivel-info').innerHTML = `<strong>📍 ${nivel.contexto}</strong>`;
+        
+        document.getElementById('escena-texto').innerHTML = `
+            <h3>${nivel.titulo}</h3>
+            <p>${nivel.pregunta}</p>
+        `;
+
+        const imagenWrapper = document.getElementById('escena-imagen-wrapper');
+        imagenWrapper.innerHTML = `<img src="${nivel.imagen}" alt="${nivel.titulo}" onerror="this.src='https://via.placeholder.com/600x400?text=${encodeURIComponent(nivel.titulo)}'" />`;
+        
+        const opcionesDiv = document.getElementById('opciones');
+        opcionesDiv.innerHTML = '';
+        
+        nivel.opciones.forEach((opcion, index) => {
+            const btn = document.createElement('button');
+            btn.innerText = opcion.texto;
+            btn.className = 'btn-opcion';
+            btn.onclick = () => verificarRespuesta(index);
+            opcionesDiv.appendChild(btn);
+        });
+
+        actualizarBarra();
+    }
+
+    function verificarRespuesta(index) {
+        const opcion = niveles[escenaActual].opciones[index];
+        const feedbackDiv = document.getElementById('explicacion');
+        
+        salud -= opcion.daño;
+        
+        if (opcion.correcta) {
+            respuestasCorrectas++;
+        }
+        
+        document.getElementById('respuestas-correctas').textContent = respuestasCorrectas;
+        actualizarBarra();
+        
+        feedbackDiv.innerHTML = opcion.feedback;
+        feedbackDiv.className = opcion.correcta ? 'exito' : 'error';
+        
+        if (!opcion.correcta) {
+            feedbackDiv.innerHTML += `<div class="tips"><strong>💡 Consejo:</strong> <p>Consulta con tu médico ocupacional o fisioterapeuta para entrenamientos específicos de ergonomía en tu puesto de trabajo.</p></div>`;
+        }
+        
+        feedbackDiv.style.display = 'block';
+        
+        document.getElementById('opciones').innerHTML = '';
+        
+        if (salud <= 0) {
+            document.getElementById('escena-texto').innerHTML = `
+                <div class="game-over">
+                    <h2>❌ GAME OVER</h2>
+                    <p><strong>Tu espalda ha sufrido un daño importante.</strong></p>
+                    <p>Diagnosis: Has acumulado posturas incorrectas que resultaron en:</p>
+                    <ul>
+                        <li>Hernia discal lumbar</li>
+                        <li>Cervicalgia crónica</li>
+                        <li>Síndrome piramidal</li>
+                    </ul>
+                    <p>Necesitarás fisioterapia urgente y cambios posturales inmediatos.</p>
+                </div>
+            `;
+            document.getElementById('btn-siguiente').innerHTML = '🔄 Reintentar';
+            document.getElementById('btn-siguiente').className = 'btn-siguiente btn-reiniciar';
+            document.getElementById('btn-siguiente').style.display = 'block';
+            document.getElementById('btn-siguiente').onclick = reiniciarJuego;
+        } else if (escenaActual < niveles.length - 1) {
+            document.getElementById('btn-siguiente').style.display = 'block';
+        } else {
+            document.getElementById('btn-siguiente').innerHTML = '✅ Ver Resultados Finales';
+            document.getElementById('btn-siguiente').style.display = 'block';
+        }
+    }
+
+    function finalizarJuego() {
+        const porcentajeLogo = Math.round((respuestasCorrectas / niveles.length) * 100);
+        let mensaje = '';
+        
+        if (porcentajeLogo === 100) {
+            mensaje = '🏆 ¡CAMPEÓN! ¡Eres un experto en higiene postural! Tu espalda está perfectamente protegida.';
+        } else if (porcentajeLogo >= 80) {
+            mensaje = '🥇 ¡Excelente! Entiendes bien los principios de ergonomía. Continúa practicando.';
+        } else if (porcentajeLogo >= 60) {
+            mensaje = '🥈 ¡Bien! Has aprendido muchos conceptos. Repasa las posiciones incorrectas.';
+        } else {
+            mensaje = '🥉 Necesitas más práctica. Revisa los conceptos y reintenta.';
+        }
+
+        document.getElementById('escena-texto').innerHTML = `
+            <div class="fin-juego">
+                <h2>¡Felicidades! 🎉</h2>
+                <p>${mensaje}</p>
+                <div class="puntuacion-final">
+                    <h3>Resumen Final</h3>
+                    <p>Respuestas Correctas: ${respuestasCorrectas}/7</p>
+                    <p>Puntuación: ${porcentajeLogo}%</p>
+                    <p>Salud Vertebral Final: ${Math.max(0, Math.round(salud))}%</p>
+                </div>
+                <div class="tips">
+                    <strong>📋 Recomendaciones Finales:</strong>
+                    <p>✓ Realiza pausas cada hora de trabajo<br>
+                       ✓ Estira cuello, espalda y piernas regularmente<br>
+                       ✓ Fortalece tu core con ejercicios específicos<br>
+                       ✓ Consulta a un fisioterapeuta si tienes dolor<br>
+                       ✓ Ajusta tu puesto de trabajo según ergonomía<br>
+                       ✓ Evita permanecer en la misma posición más de 30 minutos</p>
+                </div>
+            </div>
+        `;
+        document.getElementById('btn-siguiente').innerHTML = '🔄 Jugar Nuevamente';
+        document.getElementById('btn-siguiente').className = 'btn-siguiente btn-reiniciar';
+        document.getElementById('btn-siguiente').onclick = reiniciarJuego;
+    }
+
+    function reiniciarJuego() {
+        salud = 100;
+        escenaActual = 0;
+        respuestasCorrectas = 0;
+        document.getElementById('nivel-actual').textContent = '1';
+        document.getElementById('respuestas-correctas').textContent = '0';
+        document.getElementById('nivel-total').textContent = niveles.length;
+        cargarEscena();
+    }
+
+    document.getElementById('btn-siguiente').onclick = () => {
+        escenaActual++;
+        if (escenaActual < niveles.length) {
+            cargarEscena();
+        } else {
+            finalizarJuego();
+        }
+    };
+
+    document.getElementById('nivel-total').textContent = niveles.length;
+    cargarEscena();
+</script>
+</body>
+</html>
